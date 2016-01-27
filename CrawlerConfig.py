@@ -3,6 +3,8 @@
 '''
 import re
 from collections import defaultdict
+import Database as d
+
 
 try:
     # For python 2
@@ -16,10 +18,11 @@ from Crawler4py.Config import Config
 class CrawlerConfig(Config):
     def __init__(self):
         Config.__init__(self)
-        self.UserAgentString = "UCI Inf141-CS121 crawler ratkins1"
+        self.UserAgentString = "UCI Inf141-CS121"
         self.log = "log.txt"
         self.contentLog = "content.txt"
         self.content = defaultdict(dict)
+        self.db = d.Database()
 
     def GetSeeds(self):
         '''Returns the first set of urls to start crawling from'''
@@ -27,6 +30,9 @@ class CrawlerConfig(Config):
 
     def WriteLog(self,urlData):
         address = urlData['url']
+        
+        print("adding: " + address)
+        self.db.insert(urlData['url'], urlData['html'], urlData['text'])
 
         f = open(self.log,'a')
         f.write(address+'\n')
@@ -36,6 +42,8 @@ class CrawlerConfig(Config):
 
         df = open(self.contentLog,'a')
         df.write(str(self.content[address]) + '\n\n\n')
+
+
         return
 
     def HandleData(self, parsedData):
